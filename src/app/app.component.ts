@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
 	selector: 'app-root',
 	template: `
-		<lifecycle-hooks></lifecycle-hooks>
+		
+		<sp-left-sidebar></sp-left-sidebar>
 		<canvas id="canvas"
 				class="canvas">
 		</canvas>
-		<regular-card class="root-card"></regular-card>
-
+		<card-root class="root-card"></card-root>
+		<sp-bottom-console></sp-bottom-console>
 	`,
 	styles: [`
 		:host {
@@ -17,6 +18,7 @@ import { Component } from '@angular/core';
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			font-family: Arial;
 		}
 
 		.canvas {

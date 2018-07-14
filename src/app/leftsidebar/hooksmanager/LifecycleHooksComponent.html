@@ -1,0 +1,12 @@
+<div>
+	<sp-divider [text]="label"></sp-divider>
+	<div *ngFor="let hook of hooks"
+		 (click)="toggle(hook)"
+		 class="hook-with-label">
+		<input *ngIf="!hook.enabled" type="checkbox"/>
+		<input *ngIf="hook.enabled" type="checkbox" checked/>
+		<div class="label">{{hook.name}}</div>
+		<div class="hook-color"
+			 [style.background]="hook.color"></div>
+	</div>
+</div>

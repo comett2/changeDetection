@@ -1,0 +1,159 @@
+.card-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.card-container:hover card-creation-actions {
+	opacity: 1;
+	visibility: visible;
+}
+
+.card-container:hover .events {
+	opacity: 1;
+	visibility: visible;
+}
+
+.events {
+	position: absolute;
+	top: 10px;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.card-creation-actions {
+	position: absolute;
+	visibility: hidden;
+	opacity: 0;
+	top: 80px;
+	width: 80px;
+	transition: all 0.3s;
+}
+
+regular-card {
+	margin-right: 10px;
+}
+
+onpush-card {
+	margin-right: 10px;
+}
+
+regular-card:last-of-type {
+	margin-right: 0;
+}
+
+onpush-card:last-of-type {
+	margin-right: 0;
+}
+
+.have-at-least-one-child {
+	padding-bottom: 10px;
+}
+
+.cards-container {
+	display: flex;
+	margin-top: 50px;
+	justify-content: space-around;
+	position: relative;
+}
+
+@keyframes OnInit {
+	0% {
+		background: #afff4b; /* lovely yellow colour */
+	}
+	100% {
+		background: none;
+	}
+}
+
+.OnInit {
+	animation: OnInit 2s;
+	animation-duration: 1s;
+}
+
+
+@keyframes OnChanges {
+	0% {
+		background: #ffaf31; /* lovely yellow colour */
+	}
+	100% {
+		background: none;
+	}
+}
+
+.OnChanges {
+	animation: OnChanges 2s;
+	animation-duration: 1s;
+}
+
+@keyframes DoCheck {
+	0% {
+		background: #00d8ff; /* lovely yellow colour */
+	}
+	100% {
+		background: none;
+	}
+}
+
+.DoCheck {
+	animation: DoCheck 2s;
+	animation-duration: 1s;
+}
+
+@keyframes AfterViewInit {
+	0% {
+		background: #c989ff; /* lovely yellow colour */
+	}
+	100% {
+		background: none;
+	}
+}
+
+.AfterViewInit {
+	animation: AfterViewInit 2s;
+	animation-duration: 1s;
+}
+
+@keyframes AfterViewChecked {
+	0% {
+		background: #ff7f65; /* lovely yellow colour */
+	}
+	100% {
+		background: none;
+	}
+}
+
+.AfterViewChecked {
+	animation: AfterViewChecked 2s;
+	animation-duration: 1s;
+}
+
+@keyframes AfterContentInit {
+	0% {
+		background: #ffc907; /* lovely yellow colour */
+	}
+	100% {
+		background: none;
+	}
+}
+
+.AfterContentInit {
+	animation: AfterContentInit 2s;
+	animation-duration: 1s;
+}
+
+
+@keyframes AfterContentChecked {
+	0% {
+		background: #0505ff; /* lovely yellow colour */
+	}
+	100% {
+		background: none;
+	}
+}
+
+.AfterContentChecked {
+	animation: AfterContentChecked 2s;
+	animation-duration: 1s;
+}
+
