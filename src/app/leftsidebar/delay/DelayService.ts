@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class DelayService {
 
-	private delay: number = 1000;
+	private delay: number = 100;
 
 	private delayType: DelayType = DelayType.TIME;
 	private delayType$ = new BehaviorSubject(this.delayType);

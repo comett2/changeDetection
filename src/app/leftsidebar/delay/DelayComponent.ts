@@ -11,7 +11,7 @@ import { DelayType } from './DelayType';
 })
 export class DelayComponent implements OnInit {
 
-	label = 'Delay';
+	label = 'delay';
 	form: any;
 	type: DelayType;
 

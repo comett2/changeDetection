@@ -6,25 +6,14 @@ import { LifecycleStreamManager } from '../../streammanager/LifecycleStreamManag
 @Component({
 	selector: 'sp-collecting-type',
 	templateUrl: `CollectingTypeComponent.html`,
-	styles: [`		
-		.container {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin: 10px 10px 0 10px;
-			background: green;
-			padding: 5px;
-			color: white;
-			cursor: pointer;
-		}
-	`],
+	styleUrls: [`CollectingTypeComponent.css`],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectingTypeComponent implements OnInit {
 
 	private type: CollectingType;
 	started: boolean = false;
-	label = 'Collecting strategy';
+	label = 'collecting strategy';
 
 	constructor(private collectingTypeService: CollectingTypeService,
 				private lifecycleStreamManager: LifecycleStreamManager,

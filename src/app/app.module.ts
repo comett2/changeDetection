@@ -23,6 +23,10 @@ import { LoggerComponent } from './bottomconsole/logger/LoggerComponent';
 import { LinkManager } from './link/LinkManager';
 import { DestroyComponent } from './leftsidebar/destroy/DestroyComponent';
 import { DestroyService } from './leftsidebar/destroy/DestroyService';
+import { StopComponent } from './stop/StopComponent';
+import { CodeInputComponent } from './bottomconsole/codeinput/CodeInputComponent';
+import { CardCollectorService } from './CardCollectorService';
+import { CodeRunnerService } from './bottomconsole/codeinput/CodeRunnerService';
 
 @NgModule({
 	imports: [
@@ -45,7 +49,9 @@ import { DestroyService } from './leftsidebar/destroy/DestroyService';
 		BottomConsoleComponent,
 		TimelineComponent,
 		LoggerComponent,
-		DestroyComponent
+		DestroyComponent,
+		StopComponent,
+		CodeInputComponent
 	],
 	providers: [
 		LifecycleHooksManagerService,
@@ -53,7 +59,9 @@ import { DestroyService } from './leftsidebar/destroy/DestroyService';
 		CollectingTypeService,
 		DelayService,
 		LinkManager,
-		DestroyService
+		DestroyService,
+		CardCollectorService,
+		CodeRunnerService
 	],
 	bootstrap: [
 		AppComponent

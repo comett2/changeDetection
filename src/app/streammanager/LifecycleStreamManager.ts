@@ -7,6 +7,7 @@ import { CollectingTypeService } from '../leftsidebar/collectingstrategy/Collect
 import { CollectingType } from '../leftsidebar/collectingstrategy/CollectingType';
 import { DelayService } from '../leftsidebar/delay/DelayService';
 import { DelayType } from '../leftsidebar/delay/DelayType';
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class LifecycleStreamManager {
@@ -14,10 +15,10 @@ export class LifecycleStreamManager {
 	counter = 1;
 	private stack: Array<Cycle> = [];
 	private stackReleaser$ = new ReplaySubject<Cycle>(1);
+	private stackFilling$ = new Subject<Array<Cycle>>();
 	private started = false;
 
 	private releaseInProgress;
-	private collectingType: CollectingType;
 
 	private delayType: DelayType;
 	private releaseIndex: number = 0; //refactor;
@@ -42,6 +43,7 @@ export class LifecycleStreamManager {
 		}
 		cycle.withTime(new Date());
 		this.stack.push(cycle);
+		this.stackFilling$.next(this.stack);
 		if (this.collectingTypeService.isLive() && this.delayType === DelayType.TIME) {
 			this.releaseStack();
 		}
@@ -50,6 +52,10 @@ export class LifecycleStreamManager {
 	onStackRelease(): Observable<Cycle> {
 		return this.stackReleaser$
 				   .asObservable();
+	}
+
+	onStackFilling(): Observable<Array<Cycle>> {
+		return this.stackFilling$.asObservable();
 	}
 
 	start() {
@@ -62,6 +68,15 @@ export class LifecycleStreamManager {
 
 	release(): void {
 		this.releaseStack();
+	}
+
+	getStackLength(): number {
+		return this.stack.length;
+	}
+
+	cleanStack(): void {
+		this.stack = [];
+		this.stackFilling$.next(this.stack);
 	}
 
 	private releaseStack(): void {
@@ -88,5 +103,9 @@ export class LifecycleStreamManager {
 	previus(): void {
 		this.releaseIndex--;
 		this.stackReleaser$.next(this.stack[this.releaseIndex]);
+	}
+
+	getReleaseIndex() {
+		return this.releaseIndex;
 	}
 }

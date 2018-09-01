@@ -6,11 +6,14 @@ import { CardCreationEvent } from './CardCreationEvent';
 	template: `
 		<div #buttons
 			 class="buttons">
-			<button class="k-button regular fas fa-recycle"
+			<button class="k-button fas fa-recycle"
 					(click)="addDefaultCard()">
 			</button>
-			<button class="k-button onpush fas fa-hand-paper"
+			<button class="k-button fas fa-hand-paper"
 					(click)="addOnPushCard()">
+			</button>
+			<button class="k-button fas fa-trash-alt"
+					(click)="destroy()">
 			</button>
 		</div>
 	`,
@@ -21,23 +24,17 @@ import { CardCreationEvent } from './CardCreationEvent';
 		}
 
 		.k-button {
-			color: white;
 			font-size: 14px;
 			border-radius: 50%;
 			height: 32px;
 			width: 32px;
 			cursor: pointer;
-			box-shadow: -1px 1px 4px 0px rgba(0, 0, 0, 0.75);
+			color: black;
+			transition: all 0.1s;
 		}
 
-		.onpush {
-			background: #c57792;
-			border-color: #c57792;
-		}
-
-		.regular {
-			background: #5a9445;
-			border-color: #5a9445;
+		.k-button:hover {
+			box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
 		}
 	`]
 })
@@ -55,5 +52,9 @@ export class CardCreationActionsComponent {
 
 	addOnPushCard(): void {
 		this.action$.emit(CardCreationEvent.NEW_ONPUSH);
+	}
+
+	destroy(): void {
+		this.action$.emit(CardCreationEvent.DELETE);
 	}
 }

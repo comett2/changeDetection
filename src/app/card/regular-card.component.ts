@@ -4,9 +4,9 @@ import {
 	AfterViewChecked,
 	AfterViewInit, ChangeDetectorRef,
 	Component,
-	DoCheck, ElementRef,
+	DoCheck, ElementRef, EventEmitter,
 	Input, NgZone, OnChanges,
-	OnInit,
+	OnInit, Output,
 	QueryList, Renderer2,
 	ViewChild,
 	ViewChildren
@@ -24,6 +24,9 @@ import { Link } from '../link/Link';
 import { DestroyService } from '../leftsidebar/destroy/DestroyService';
 import { Card } from './Card';
 import { Subject } from 'rxjs/Subject';
+import { CardCollectorService } from '../CardCollectorService';
+import { CodeRunnerService } from '../bottomconsole/codeinput/CodeRunnerService';
+import { Code } from '../bottomconsole/codeinput/Code';
 
 @Component({
 	selector: 'regular-card',
@@ -48,10 +51,12 @@ import { Subject } from 'rxjs/Subject';
 			<ng-container *ngFor="let card of cards">
 				<regular-card *ngIf="card.type === 0"
 							  [id]="card.id"
+							  (destroyMe)="destroyOne($event)"
 							  [parent]="cardTitleContainer">
 				</regular-card>
 				<onpush-card *ngIf="card.type === 1"
 							 [id]="card.id"
+							 (destroyMe)="destroyOne($event)"
 							 [parent]="cardTitleContainer">
 				</onpush-card>
 			</ng-container>
@@ -65,6 +70,8 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 	@ViewChild('cardTitleContainer') cardTitleContainer;
 	// @ViewChildren(RegularCard) regularCards: QueryList<RegularCard>;
 	// @ViewChildren(OnpushCardComponent) onpushCards: QueryList<OnpushCardComponent>;
+	@Output('destroyMe')
+	private destroyMe$ = new EventEmitter();
 
 	@Input()
 	parent: any;
@@ -73,7 +80,6 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 	id: any;
 
 	cards: Array<Card> = [];
-	id: number;
 
 	private actualCycle: Cycle;
 	private destroy$ = new Subject();
@@ -86,7 +92,10 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 				private zone: NgZone,
 				private elRef: ElementRef,
 				private linkManager: LinkManager,
-				private destroyService: DestroyService) {
+				private destroyService: DestroyService,
+				private cardCollectorService: CardCollectorService,
+				private codeRunnerService: CodeRunnerService,
+				private elementRef: ElementRef) {
 
 		this.lifecycleStreamManager
 			.onStackRelease()
@@ -124,6 +133,14 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 	}
 
 	ngOnInit() {
+		this.cardCollectorService.addCard(this.id);
+		this.codeRunnerService
+			.onRun()
+			.subscribe((code: Code) => {
+				if (code.id === this.id ) {
+					code.code(this.changeDetectorRef, this.elementRef);
+				}
+			});
 		if (this.id === undefined) {
 			this.id = this.lifecycleStreamManager.counter++;
 		}
@@ -189,8 +206,12 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 		} else if (event === CardCreationEvent.NEW_DEFUALT) {
 			this.addDefaultCard();
 		} else if (event === CardCreationEvent.DELETE) {
-			// this.remove()
+			this.destroy();
 		}
+	}
+
+	destroyMe(): void {
+		this.destroyMe$.next(this.id)
 	}
 
 	private addDefaultCard(): void {
@@ -203,5 +224,14 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 		let id = this.lifecycleStreamManager.counter;
 		this.lifecycleStreamManager.counter++;
 		this.cards.push(new Card(id, CardType.ONPUSH));
+	}
+
+	private destroy() {
+		this.destroyMe();
+	}
+
+	private destroyOne(id: number) {
+		let indexToDelete = this.cards.findIndex((card: Card) => card.id === id);
+		this.cards.splice(indexToDelete, 1);
 	}
 }

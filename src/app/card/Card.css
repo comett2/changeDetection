@@ -26,7 +26,6 @@
 .card-creation-actions {
 	visibility: hidden;
 	opacity: 0;
-	width: 80px;
 	height: 20px;
 	transition: all 0.3s;
 }
@@ -44,7 +43,7 @@
 
 .card-container:hover .card-creation-actions {
 	transition: all 0.15s;
-	transform: scale(0.51);
+	/*transform: scale(0.51);*/
 }
 
 regular-card {

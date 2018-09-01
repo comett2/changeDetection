@@ -7,14 +7,14 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 export class LifecycleHooksManagerService {
 
 	private hooks: Array<Hook> = [
-		new Hook('OnInit', false, '#afff4b'),
-		new Hook('OnDestroy', false, 'red'),
-		new Hook('OnChanges', false, '#ffaf31'),
-		new Hook('DoCheck', false, '#00d8ff'),
-		new Hook('AfterViewInit', false, '#c989ff'),
-		new Hook('AfterViewChecked', false, '#ff7f65'),
-		new Hook('AfterContentInit', false, '#ffc907'),
-		new Hook('AfterContentChecked', false, '#0505ff')];
+		new Hook('OnInit', true, '#afff4b'),
+		new Hook('OnDestroy', true, 'red'),
+		new Hook('OnChanges', true, '#ffaf31'),
+		new Hook('DoCheck', true, '#00d8ff'),
+		new Hook('AfterViewInit', true, '#c989ff'),
+		new Hook('AfterViewChecked', true, '#ff7f65'),
+		new Hook('AfterContentInit', true, '#ffc907'),
+		new Hook('AfterContentChecked', true, '#0505ff')];
 	private hooks$ = new ReplaySubject<Array<Hook>>(1);
 
 	constructor() {
@@ -28,6 +28,12 @@ export class LifecycleHooksManagerService {
 	toggleHook(hook: Hook): void {
 		let hookIndex = this.hooks.indexOf(hook);
 		this.hooks[hookIndex].enabled = !this.hooks[hookIndex].enabled;
+		this.hooks$.next(this.hooks);
+	}
+
+	setHook(hook: Hook, value: boolean) {
+		let hookIndex = this.hooks.indexOf(hook);
+		this.hooks[hookIndex].enabled = value;
 		this.hooks$.next(this.hooks);
 	}
 

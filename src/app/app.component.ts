@@ -12,6 +12,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core
 		</canvas>
 		<card-root class="root-card"></card-root>
 		<sp-bottom-console></sp-bottom-console>
+		<sp-stop></sp-stop>
 	`,
 	styles: [`
 		:host {
@@ -51,7 +52,7 @@ export class AppComponent implements AfterViewInit {
 		this.canvasHeight = dimension[1];
 		var canvasObject = document.getElementById('canvas');
 
-		canvasObject.width = this.canvasWidth
-		canvasObject.height = this.canvasHeight;
+		canvasObject['width'] = this.canvasWidth
+		canvasObject['height'] = this.canvasHeight;
 	}
 }

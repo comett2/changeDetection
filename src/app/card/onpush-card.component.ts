@@ -5,10 +5,10 @@ import {
 	AfterViewInit,
 	ChangeDetectionStrategy, ChangeDetectorRef,
 	Component,
-	DoCheck,
+	DoCheck, ElementRef, EventEmitter,
 	Input, NgZone,
 	OnChanges,
-	OnInit, Renderer2,
+	OnInit, Output, Renderer2,
 	ViewChild
 } from '@angular/core';
 import { CardType } from './CardType';
@@ -22,6 +22,9 @@ import { Link } from '../link/Link';
 import { DestroyService } from '../leftsidebar/destroy/DestroyService';
 import { Card } from './Card';
 import { Subject } from 'rxjs/Subject';
+import { CardCollectorService } from '../CardCollectorService';
+import { CodeRunnerService } from '../bottomconsole/codeinput/CodeRunnerService';
+import { Code } from '../bottomconsole/codeinput/Code';
 
 @Component({
 	selector: 'onpush-card',
@@ -45,10 +48,12 @@ import { Subject } from 'rxjs/Subject';
 			<ng-container *ngFor="let card of cards">
 				<regular-card *ngIf="card.type === 0"
 							  [id]="card.id"
+							  (destroyMe)="destroyOne($event)"
 							  [parent]="cardTitleContainer">
 				</regular-card>
 				<onpush-card *ngIf="card.type === 1"
 							 [id]="card.id"
+							 (destroyMe)="destroyOne($event)"
 							 [parent]="cardTitleContainer">
 				</onpush-card>
 			</ng-container>
@@ -62,6 +67,9 @@ export class OnpushCardComponent implements OnInit, OnChanges, DoCheck, AfterVie
 
 	@ViewChild('cardTitleContainer') cardTitleContainer;
 
+	@Output('destroyMe')
+	private destroyMe$ = new EventEmitter();
+
 	@Input()
 	parent: any;
 
@@ -69,7 +77,6 @@ export class OnpushCardComponent implements OnInit, OnChanges, DoCheck, AfterVie
 	id: any;
 
 	cards: Array<Card> = [];
-	id: number;
 
 	private actualCycle: Cycle;
 	private destroy$ = new Subject();
@@ -81,7 +88,10 @@ export class OnpushCardComponent implements OnInit, OnChanges, DoCheck, AfterVie
 				private changeDetectorRef: ChangeDetectorRef,
 				private zone: NgZone,
 				private linkManager: LinkManager,
-				private destroyService: DestroyService) {
+				private destroyService: DestroyService,
+				private cardCollectorService: CardCollectorService,
+				private codeRunnerService: CodeRunnerService,
+				private elementRef: ElementRef) {
 
 		this.lifecycleStreamManager
 			.onStackRelease()
@@ -112,11 +122,18 @@ export class OnpushCardComponent implements OnInit, OnChanges, DoCheck, AfterVie
 			.subscribe((id: number) => {
 				let indexToDelete = this.cards.findIndex((card: Card) => card.id === id);
 				this.cards.splice(indexToDelete, 1);
-				console.log(id)
 			});
 	}
 
 	ngOnInit() {
+		this.cardCollectorService.addCard(this.id);
+		this.codeRunnerService
+			.onRun()
+			.subscribe((code: Code) => {
+				if (code.id === this.id ) {
+					code.code(this.changeDetectorRef, this.elementRef);
+				}
+			});
 		if (this.id === undefined) {
 			this.id = this.lifecycleStreamManager.counter++;
 		}
@@ -183,8 +200,12 @@ export class OnpushCardComponent implements OnInit, OnChanges, DoCheck, AfterVie
 		} else if (event === CardCreationEvent.NEW_DEFUALT) {
 			this.addDefaultCard();
 		} else if (event === CardCreationEvent.DELETE) {
-			// this.remove()
+			this.destroy();
 		}
+	}
+
+	destroyMe(): void {
+		this.destroyMe$.next(this.id);
 	}
 
 	private addDefaultCard(): void {
@@ -197,5 +218,14 @@ export class OnpushCardComponent implements OnInit, OnChanges, DoCheck, AfterVie
 		let id = this.lifecycleStreamManager.counter;
 		this.lifecycleStreamManager.counter++;
 		this.cards.push(new Card(id, CardType.ONPUSH));
+	}
+
+	private destroy() {
+		this.destroyMe();
+	}
+
+	private destroyOne(id: number) {
+		let indexToDelete = this.cards.findIndex((card: Card) => card.id === id);
+		this.cards.splice(indexToDelete, 1);
 	}
 }

@@ -6,7 +6,7 @@ import { LinkManager } from '../../link/LinkManager';
 @Injectable()
 export class DestroyService {
 
-	private destroy$ = new Subject();
+	private destroy$ = new Subject<number>();
 
 	constructor() {
 

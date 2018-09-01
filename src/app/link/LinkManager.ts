@@ -25,8 +25,8 @@ export class LinkManager {
 
 	drawLink(link: Link): void {
 		var canvas = document.getElementById('canvas');
-		var ctx = canvas.getContext('2d');
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		var ctx = canvas['getContext']('2d');
+		ctx.clearRect(0, 0, canvas['width'], canvas['height']);
 		setTimeout(() => {
 			this.links.forEach((link: Link) => {
 				this.draw(link, ctx);
@@ -36,8 +36,8 @@ export class LinkManager {
 
 	redraw() {
 		var canvas = document.getElementById('canvas');
-		var ctx = canvas.getContext('2d');
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		var ctx = canvas['getContext']('2d');
+		ctx.clearRect(0, 0, canvas['width'], canvas['height']);
 		setTimeout(() => {
 			this.links.forEach((link: Link) => {
 				this.draw(link, ctx);
