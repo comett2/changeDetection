@@ -5,7 +5,10 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 	template: `
 		<regular-card class="root-card"></regular-card>
 	`,
-	styles: [`		
+	styles: [`	
+		:host {
+			margin-top: 30px;
+		}
 	`],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })

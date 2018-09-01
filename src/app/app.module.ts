@@ -3,12 +3,10 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { NodeComponent } from './node/node.component';
 import { RegularCard } from './card/regular-card.component';
 import { OnpushCardComponent } from './card/onpush-card.component';
 import { LifecycleHooksManagerService } from './leftsidebar/hooksmanager/lifecycle-hooks-manager.service';
 import { CardCreationActionsComponent } from './card/cardcreationactions/card-creation-actions.component';
-import { AppStoreModule } from './store/app-store.module';
 import { LifecycleStreamManager } from './streammanager/LifecycleStreamManager';
 import { CollectingTypeComponent } from './leftsidebar/collectingstrategy/CollectingTypeComponent';
 import { CardRootComponent } from './card/CardRootComponent';
@@ -22,17 +20,18 @@ import { PlayerComponent } from './bottomconsole/player/PlayerComponent';
 import { BottomConsoleComponent } from './bottomconsole/BottomConsoleComponent';
 import { TimelineComponent } from './bottomconsole/timeline/TimelineComponent';
 import { LoggerComponent } from './bottomconsole/logger/LoggerComponent';
+import { LinkManager } from './link/LinkManager';
+import { DestroyComponent } from './leftsidebar/destroy/DestroyComponent';
+import { DestroyService } from './leftsidebar/destroy/DestroyService';
 
 @NgModule({
 	imports: [
 		BrowserModule,
-		AppStoreModule,
 		FormsModule,
 		ReactiveFormsModule
 	],
 	declarations: [
 		AppComponent,
-		NodeComponent,
 		RegularCard,
 		OnpushCardComponent,
 		LifecycleHooksComponent,
@@ -45,13 +44,16 @@ import { LoggerComponent } from './bottomconsole/logger/LoggerComponent';
 		PlayerComponent,
 		BottomConsoleComponent,
 		TimelineComponent,
-		LoggerComponent
+		LoggerComponent,
+		DestroyComponent
 	],
 	providers: [
 		LifecycleHooksManagerService,
 		LifecycleStreamManager,
 		CollectingTypeService,
-		DelayService
+		DelayService,
+		LinkManager,
+		DestroyService
 	],
 	bootstrap: [
 		AppComponent

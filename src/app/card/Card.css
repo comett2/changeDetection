@@ -2,6 +2,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
+	height: 80px;
+	width: 100px;
 }
 
 .card-container:hover card-creation-actions {
@@ -15,19 +18,33 @@
 }
 
 .events {
-	position: absolute;
-	top: 10px;
 	visibility: hidden;
 	opacity: 0;
+	margin: 3px;
 }
 
 .card-creation-actions {
-	position: absolute;
 	visibility: hidden;
 	opacity: 0;
-	top: 80px;
 	width: 80px;
+	height: 20px;
 	transition: all 0.3s;
+}
+
+.card-container:hover {
+	transition: all 0.15s;
+	transform: scale(1.4);
+	box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.75);
+}
+
+.card-container:hover .title {
+	transition: all 0.15s;
+	transform: scale(0.51);
+}
+
+.card-container:hover .card-creation-actions {
+	transition: all 0.15s;
+	transform: scale(0.51);
 }
 
 regular-card {
@@ -56,104 +73,3 @@ onpush-card:last-of-type {
 	justify-content: space-around;
 	position: relative;
 }
-
-@keyframes OnInit {
-	0% {
-		background: #afff4b; /* lovely yellow colour */
-	}
-	100% {
-		background: none;
-	}
-}
-
-.OnInit {
-	animation: OnInit 2s;
-	animation-duration: 1s;
-}
-
-
-@keyframes OnChanges {
-	0% {
-		background: #ffaf31; /* lovely yellow colour */
-	}
-	100% {
-		background: none;
-	}
-}
-
-.OnChanges {
-	animation: OnChanges 2s;
-	animation-duration: 1s;
-}
-
-@keyframes DoCheck {
-	0% {
-		background: #00d8ff; /* lovely yellow colour */
-	}
-	100% {
-		background: none;
-	}
-}
-
-.DoCheck {
-	animation: DoCheck 2s;
-	animation-duration: 1s;
-}
-
-@keyframes AfterViewInit {
-	0% {
-		background: #c989ff; /* lovely yellow colour */
-	}
-	100% {
-		background: none;
-	}
-}
-
-.AfterViewInit {
-	animation: AfterViewInit 2s;
-	animation-duration: 1s;
-}
-
-@keyframes AfterViewChecked {
-	0% {
-		background: #ff7f65; /* lovely yellow colour */
-	}
-	100% {
-		background: none;
-	}
-}
-
-.AfterViewChecked {
-	animation: AfterViewChecked 2s;
-	animation-duration: 1s;
-}
-
-@keyframes AfterContentInit {
-	0% {
-		background: #ffc907; /* lovely yellow colour */
-	}
-	100% {
-		background: none;
-	}
-}
-
-.AfterContentInit {
-	animation: AfterContentInit 2s;
-	animation-duration: 1s;
-}
-
-
-@keyframes AfterContentChecked {
-	0% {
-		background: #0505ff; /* lovely yellow colour */
-	}
-	100% {
-		background: none;
-	}
-}
-
-.AfterContentChecked {
-	animation: AfterContentChecked 2s;
-	animation-duration: 1s;
-}
-

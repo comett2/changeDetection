@@ -4,7 +4,7 @@ import {
 	AfterViewChecked,
 	AfterViewInit, ChangeDetectorRef,
 	Component,
-	DoCheck,
+	DoCheck, ElementRef,
 	Input, NgZone, OnChanges,
 	OnInit,
 	QueryList, Renderer2,
@@ -18,19 +18,24 @@ import { LifecycleHooksManagerService } from '../leftsidebar/hooksmanager/lifecy
 import { Hook } from '../leftsidebar/hooksmanager/Hook';
 import { LifecycleStreamManager } from '../streammanager/LifecycleStreamManager';
 import { Cycle } from '../streammanager/Cycle';
-import { filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
+import { LinkManager } from '../link/LinkManager';
+import { Link } from '../link/Link';
+import { DestroyService } from '../leftsidebar/destroy/DestroyService';
+import { Card } from './Card';
+import { Subject } from 'rxjs/Subject';
 
 @Component({
 	selector: 'regular-card',
 	template: `
-		<div class="card-container">
+		<div #cardTitleContainer
+			 class="card-container">
 			<div class="events far fa-hand-pointer"
-				(click)="click()">
-				
+				 (click)="click()">
+
 			</div>
-			<div #cardTitleContainer
-				 class="title">
-				default {{id}}
+			<div class="title">
+				{{id}}
 			</div>
 			<card-creation-actions
 					class="card-creation-actions"
@@ -40,9 +45,15 @@ import { filter } from 'rxjs/operators';
 
 		<div class="cards-container"
 			 [class.have-at-least-one-child]="cards.length > 0">
-			<ng-container *ngFor="let cardType of cards">
-				<regular-card *ngIf="cardType === 0"></regular-card>
-				<onpush-card *ngIf="cardType === 1"></onpush-card>
+			<ng-container *ngFor="let card of cards">
+				<regular-card *ngIf="card.type === 0"
+							  [id]="card.id"
+							  [parent]="cardTitleContainer">
+				</regular-card>
+				<onpush-card *ngIf="card.type === 1"
+							 [id]="card.id"
+							 [parent]="cardTitleContainer">
+				</onpush-card>
 			</ng-container>
 		</div>
 
@@ -55,25 +66,35 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 	// @ViewChildren(RegularCard) regularCards: QueryList<RegularCard>;
 	// @ViewChildren(OnpushCardComponent) onpushCards: QueryList<OnpushCardComponent>;
 
-	cards: Array<CardType> = [];
+	@Input()
+	parent: any;
+
+	@Input()
+	id: any;
+
+	cards: Array<Card> = [];
 	id: number;
+
 	private actualCycle: Cycle;
+	private destroy$ = new Subject();
+	private link: Link;
 
 	constructor(private lifecycleHooksManagerService: LifecycleHooksManagerService,
 				private lifecycleStreamManager: LifecycleStreamManager,
 				private renderer: Renderer2,
 				private changeDetectorRef: ChangeDetectorRef,
-				private zone: NgZone) {
-
-		this.id = lifecycleStreamManager.counter + 1;
-		lifecycleStreamManager.counter ++;
+				private zone: NgZone,
+				private elRef: ElementRef,
+				private linkManager: LinkManager,
+				private destroyService: DestroyService) {
 
 		this.lifecycleStreamManager
 			.onStackRelease()
 			.pipe(
 				filter((cycle: Cycle) => {
 					return cycle.id === this.id;
-				})
+				}),
+				takeUntil(this.destroy$)
 			)
 			.subscribe((cycle: Cycle) => {
 				if (this.lifecycleHooksManagerService.isActive(cycle.hookName)) {
@@ -83,13 +104,29 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 					this.zone.runOutsideAngular(() => {
 						setTimeout(() => {
 							this.renderer.removeClass(this.cardTitleContainer.nativeElement, cycle.hookName);
-						}, 600)
+						}, 600);
 					});
+				}
+			});
+
+		this.destroyService
+			.selectDestroy()
+			.pipe(
+				takeUntil(this.destroy$)
+			)
+			.subscribe((id: number) => {
+				let indexToDelete = this.cards.findIndex((card: Card) => card.id === id);
+				if (indexToDelete >= 0) {
+					this.cards.splice(indexToDelete, 1);
+					this.changeDetectorRef.detectChanges();
 				}
 			});
 	}
 
 	ngOnInit() {
+		if (this.id === undefined) {
+			this.id = this.lifecycleStreamManager.counter++;
+		}
 		if (this.lifecycleHooksManagerService.isActive('OnInit')) {
 			this.lifecycleStreamManager.hookFired(new Cycle(this.id, 'OnInit'));
 		}
@@ -120,11 +157,14 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 	}
 
 	ngAfterViewInit() {
+		if (this.parent) {
+			this.link = new Link(this.parent, this.cardTitleContainer.nativeElement);
+			this.linkManager.addLink(this.link);
+		}
 		if (this.lifecycleHooksManagerService.isActive('AfterViewInit')) {
 			this.lifecycleStreamManager.hookFired(new Cycle(this.id, 'AfterViewInit'));
 		}
 	}
-
 	ngAfterViewChecked() {
 		if (this.lifecycleHooksManagerService.isActive('AfterViewChecked')) {
 			this.lifecycleStreamManager.hookFired(new Cycle(this.id, 'AfterViewChecked'));
@@ -135,10 +175,12 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 		if (this.lifecycleHooksManagerService.isActive('OnDestroy')) {
 			this.lifecycleStreamManager.hookFired(new Cycle(this.id, 'OnDestroy'));
 		}
+		this.destroy$.next();
+		this.linkManager.removeLink(this.link);
 	}
 
 	click(): void {
-		console.log('click')
+		console.log('click');
 	}
 
 	resolveAction(event: CardCreationEvent) {
@@ -152,10 +194,14 @@ export class RegularCard implements OnInit, OnChanges, DoCheck, AfterViewInit, A
 	}
 
 	private addDefaultCard(): void {
-		this.cards.push(CardType.DEFAULT);
+		let id = this.lifecycleStreamManager.counter;
+		this.lifecycleStreamManager.counter++;
+		this.cards.push(new Card(id, CardType.DEFAULT));
 	}
 
 	private addOnPushCard(): void {
-		this.cards.push(CardType.ONPUSH);
+		let id = this.lifecycleStreamManager.counter;
+		this.lifecycleStreamManager.counter++;
+		this.cards.push(new Card(id, CardType.ONPUSH));
 	}
 }

@@ -11,7 +11,7 @@ import { DelayType } from '../leftsidebar/delay/DelayType';
 @Injectable()
 export class LifecycleStreamManager {
 
-	counter = 0;
+	counter = 1;
 	private stack: Array<Cycle> = [];
 	private stackReleaser$ = new ReplaySubject<Cycle>(1);
 	private started = false;

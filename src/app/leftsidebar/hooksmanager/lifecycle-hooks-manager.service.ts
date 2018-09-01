@@ -8,6 +8,7 @@ export class LifecycleHooksManagerService {
 
 	private hooks: Array<Hook> = [
 		new Hook('OnInit', false, '#afff4b'),
+		new Hook('OnDestroy', false, 'red'),
 		new Hook('OnChanges', false, '#ffaf31'),
 		new Hook('DoCheck', false, '#00d8ff'),
 		new Hook('AfterViewInit', false, '#c989ff'),
